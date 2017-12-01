@@ -29,3 +29,24 @@ Or lambdas;
 ```C#
 RobustTimerFactory.Create((timeLeft) => { }, () => { }); 
 ```
+
+## Usage Example
+```C#
+IRobustTimer timer = RobustTimerFactory.CreateAndStartRunning(
+    TimeSpan.FromSeconds(1),
+    TimeSpan.FromHours(4),
+    (timeRemaining) => { Console.WriteLine($"Time Remaining: {timeRemaining}") },
+    () => { Console.WriteLine("Timer Complete")});
+
+Console.WriteLine($"Timer tickes every: {timer.Interval}";
+
+Console.WriteLine($"Timer will run for: {timer.RemainingTime}";
+
+Console.WriteLine($"Timer is: {timer.State}"; // running
+
+timer.Pause();
+
+Console.WriteLine($"Timer is: {timer.State}"; // paused
+
+timer.Reset();
+```

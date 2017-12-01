@@ -4,7 +4,7 @@ A robust wrapper around the Xamarin Forms Timer implementation.
 Xamarin Forms allows only the most primitive use of a timer via its "Device" class. 
 https://developer.xamarin.com/api/member/Xamarin.Forms.Device.StartTimer/p/System.TimeSpan/System.Func%7BSystem.Boolean%7D/
 
-The robust timer is designed to wrap the simple Xamarin Forms mechanism and provide basic functionality such as starting, stopping, pausing, resuming and querying for remaining time and timer state.
+The robust timer is designed to wrap the simple Xamarin Forms mechanism and provide basic functionality such as starting, stopping, pausing, resuming, setting a new duration, setting a new interval and querying for remaining duration and timer state.
 
 The timer is instantiated using a static factory class and outside access to the timer is limited via the use of an interface.
 ```C#

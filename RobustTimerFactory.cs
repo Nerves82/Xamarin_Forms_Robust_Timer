@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using Xamarin.Forms;
 
@@ -20,21 +20,23 @@ namespace mtda.Framework
         void Start();
         void Pause();
         void Reset();
+        void SetInterval(TimeSpan interval);
+        void SetRemainingTime(TimeSpan remainingTime);
     }
 
     public static class RobustTimerFactory
     {
-        public static IRobustTimer Create(TimeSpan interval, TimeSpan timespan, Action<TimeSpan> onTick, Action onComplete)
+        public static IRobustTimer Create(TimeSpan interval, TimeSpan timespan, Action<TimeSpan> onTick, Action onComplete = null)
         {
             return new RobustTimer(interval, timespan, TimerState.Stopped, onTick, onComplete);
         }
 
-        public static IRobustTimer CreateAndPause(TimeSpan interval, TimeSpan timespan, Action<TimeSpan> onTick, Action onComplete)
+        public static IRobustTimer CreateAndPause(TimeSpan interval, TimeSpan timespan, Action<TimeSpan> onTick, Action onComplete = null)
         {
             return new RobustTimer(interval, timespan, TimerState.Paused, onTick, onComplete);
         }
 
-        public static IRobustTimer CreateAndStartRunning(TimeSpan interval, TimeSpan timespan, Action<TimeSpan> onTick, Action onComplete)
+        public static IRobustTimer CreateAndStartRunning(TimeSpan interval, TimeSpan timespan, Action<TimeSpan> onTick, Action onComplete = null)
         {
             var timer = new RobustTimer(interval, timespan, TimerState.Running, onTick, onComplete);
             timer.Start();
@@ -43,6 +45,8 @@ namespace mtda.Framework
 
         private class RobustTimer : IRobustTimer
         {
+            private TimeSpan _originalRemainingTime;
+
             private TimeSpan _remainingTime;
             public TimeSpan RemainingTime
             {
@@ -70,10 +74,11 @@ namespace mtda.Framework
             readonly Action<TimeSpan> _onTick;
             readonly Action _onComplete;
 
-            public RobustTimer(TimeSpan interval, TimeSpan timespan, TimerState initialState, Action<TimeSpan> onTick, Action onComplete)
+            public RobustTimer(TimeSpan interval, TimeSpan timespan, TimerState initialState, Action<TimeSpan> onTick, Action onComplete = null)
             {
                 _interval = interval;
                 _remainingTime = timespan;
+                _originalRemainingTime = timespan;
                 _state = initialState;
                 _onTick = onTick;
                 _onComplete = onComplete;
@@ -94,8 +99,18 @@ namespace mtda.Framework
             public void Reset()
             {
                 _state = TimerState.Stopped;
-                _remainingTime = new TimeSpan();
-                _interval = new TimeSpan();
+                _remainingTime = _originalRemainingTime;
+            }
+
+            public void SetInterval(TimeSpan interval)
+            {
+                _interval = interval;
+            }
+
+            public void SetRemainingTime(TimeSpan remainingTime)
+            {
+                _remainingTime = remainingTime;
+                _originalRemainingTime = remainingTime;
             }
 
             private void RunTimer()
@@ -114,7 +129,7 @@ namespace mtda.Framework
                     if (_remainingTime.TotalMilliseconds <= 0)
                     {
                         Reset();
-                        _onComplete.Invoke();
+                        _onComplete?.Invoke();
 
                         return false;
                     }

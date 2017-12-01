@@ -13,7 +13,7 @@ namespace mtda.Framework
 
     public interface IRobustTimer
     {
-        TimeSpan RemainingTime { get; }
+        TimeSpan Duration { get; }
         TimeSpan Interval { get; }
         TimerState State { get; }
 
@@ -21,7 +21,7 @@ namespace mtda.Framework
         void Pause();
         void Reset();
         void SetInterval(TimeSpan interval);
-        void SetRemainingTime(TimeSpan remainingTime);
+        void SetDuration(TimeSpan remainingTime);
     }
 
     public static class RobustTimerFactory
@@ -45,14 +45,14 @@ namespace mtda.Framework
 
         private class RobustTimer : IRobustTimer
         {
-            private TimeSpan _originalRemainingTime;
+            private TimeSpan _originalDuration;
 
-            private TimeSpan _remainingTime;
-            public TimeSpan RemainingTime
+            private TimeSpan _duration;
+            public TimeSpan Duration
             {
                 get
                 {
-                    return _remainingTime;
+                    return _duration;
                 }
             }
 
@@ -77,8 +77,8 @@ namespace mtda.Framework
             public RobustTimer(TimeSpan interval, TimeSpan timespan, TimerState initialState, Action<TimeSpan> onTick, Action onComplete = null)
             {
                 _interval = interval;
-                _remainingTime = timespan;
-                _originalRemainingTime = timespan;
+                _duration = timespan;
+                _originalDuration = timespan;
                 _state = initialState;
                 _onTick = onTick;
                 _onComplete = onComplete;
@@ -99,7 +99,7 @@ namespace mtda.Framework
             public void Reset()
             {
                 _state = TimerState.Stopped;
-                _remainingTime = _originalRemainingTime;
+                _duration = _originalDuration;
             }
 
             public void SetInterval(TimeSpan interval)
@@ -107,10 +107,10 @@ namespace mtda.Framework
                 _interval = interval;
             }
 
-            public void SetRemainingTime(TimeSpan remainingTime)
+            public void SetDuration(TimeSpan remainingTime)
             {
-                _remainingTime = remainingTime;
-                _originalRemainingTime = remainingTime;
+                _duration = remainingTime;
+                _originalDuration = remainingTime;
             }
 
             private void RunTimer()
@@ -123,10 +123,10 @@ namespace mtda.Framework
                     }
 
                     // reduce the remaining time by the interval
-                    _remainingTime = _remainingTime - _interval;
+                    _duration = _duration - _interval;
 
                     // if the timer has completed
-                    if (_remainingTime.TotalMilliseconds <= 0)
+                    if (_duration.TotalMilliseconds <= 0)
                     {
                         Reset();
                         _onComplete?.Invoke();
@@ -135,7 +135,7 @@ namespace mtda.Framework
                     }
 
                     // fire the timer event
-                    _onTick.Invoke(_remainingTime);
+                    _onTick.Invoke(_duration);
                     return true;
                 });
             }

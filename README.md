@@ -16,7 +16,7 @@ The interval between timer “ticks” and the amount of time the timer will run
 RobustTimerFactory.Create(TimeSpan.FromSeconds(1));
 ```
 
-There are 2 actions that need to be supplied to the timer. The “tick” action, which is executed one per interval returning the remaining time and the completed action which is executed when the timer has run for the provided timespan.
+There is 1 required action and one optional action that need to be supplied to the timer. The “tick” action, which is executed one per interval returning the remaining duration and the optional "completed" action which is executed when the timer has run for the provided duration.
 
 These actions can be supplied as either predefined Actions;
 ```C#
